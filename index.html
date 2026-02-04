@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>התראת קרבה לתחנת אוטובוס</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    <span class="title-icon">🔔</span>
+                    התראת קרבה לתחנה
+                </h1>
+                <p class="subtitle">קבל התראה אוטומטית כשאתה מתקרב לתחנת האוטובוס שלך</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="input-group">
+                    <label for="station-input" class="input-label">
+                        🔍 חפש תחנת אוטובוס
+                    </label>
+                    <input 
+                        type="text" 
+                        id="station-input" 
+                        class="input-field" 
+                        placeholder="לדוגמה: תחנה מרכזית חיפה, רמב&quot;ם חיפה, קניון לב חיפה..."
+                        autocomplete="off"
+                    />
+                    <div id="suggestions-list" class="suggestions-list"></div>
+                </div>
+
+                <button id="search-btn" class="btn btn-primary">
+                    <span class="btn-icon">🎯</span>
+                    חפש תחנה
+                </button>
+
+                <!-- Selected Station Display -->
+                <div id="selected-station" class="selected-station" style="display: none;">
+                    <div class="station-info">
+                        <span class="station-icon">🚏</span>
+                        <div class="station-details">
+                            <h3 class="station-name" id="station-name">-</h3>
+                            <p class="station-address" id="station-address">-</p>
+                        </div>
+                    </div>
+                    <button id="start-tracking-btn" class="btn btn-success">
+                        <span class="btn-icon">📍</span>
+                        התחל מעקב
+                    </button>
+                    <button id="stop-tracking-btn" class="btn btn-danger" style="display: none;">
+                        <span class="btn-icon">⏸️</span>
+                        עצור מעקב
+                    </button>
+                </div>
+            </section>
+
+            <!-- Tracking Status -->
+            <section class="tracking-section" id="tracking-section" style="display: none;">
+                <div class="tracking-card">
+                    <div class="tracking-status" id="tracking-status">
+                        <div class="status-icon">🔄</div>
+                        <div class="status-text">מעקב פעיל</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="results-section" style="display: none;">
+                <div class="result-card" id="result-card">
+                    <div class="result-icon">📏</div>
+                    <div class="result-content">
+                        <h3 class="result-title">המרחק הנוכחי</h3>
+                        <p class="result-value" id="distance-value">-</p>
+                        <p class="result-subtitle" id="walking-time">-</p>
+                    </div>
+                </div>
+
+                <div class="location-info">
+                    <div class="info-item">
+                        <span class="info-label">המיקום שלך:</span>
+                        <span class="info-value" id="user-location">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">תחנת היעד:</span>
+                        <span class="info-value" id="station-location">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">מעודכן לאחרונה:</span>
+                        <span class="info-value" id="last-update">-</span>
+                    </div>
+                </div>
+
+                <!-- Alert Zone Indicator -->
+                <div class="alert-zone" id="alert-zone" style="display: none;">
+                    <div class="alert-content">
+                        <span class="alert-icon">⚠️</span>
+                        <div class="alert-text">
+                            <h4>אזור התראה!</h4>
+                            <p>אתה נמצא במרחק קרוב מהתחנה</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Map Section -->
+            <section class="map-section">
+                <div id="map" class="map-container"></div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-marker legend-marker-user"></div>
+                        <span>המיקום שלך</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-marker legend-marker-station"></div>
+                        <span>תחנת יעד</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-circle"></div>
+                        <span>אזור התראה (1.5 ק"מ)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Status Messages -->
+            <div id="status-message" class="status-message"></div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>האפליקציה עוקבת אחר מיקומך ומתריעה כשאתה מתקרב לתחנה</p>
+        </footer>
+    </div>
+
+    <!-- Audio for alert -->
+    <audio id="alert-sound" preload="auto">
+        <source src="alert/a01.mp3" type="audio/mpeg">
+        <source src="alert/a01.ogg" type="audio/ogg">
+        <source src="alert/a01.wav" type="audio/wav">
+    </audio>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
