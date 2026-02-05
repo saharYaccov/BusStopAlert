@@ -11,7 +11,7 @@ let isTracking = false;
 let hasAlerted = false;
 let alertSound = null;
 
-const ALERT_DISTANCE = 1.5; // km
+const ALERT_DISTANCE = 5; // km
 const TRACKING_INTERVAL = 5000; // 5 seconds
 
 // Initialize map
