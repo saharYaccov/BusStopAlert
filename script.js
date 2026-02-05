@@ -487,6 +487,25 @@ function requestNotificationPermission() {
     }
 }
 
+
+function armAlertSound() {
+    if (!alertSound) return;
+
+    alertSound.volume = 0;       // שקט
+    alertSound.currentTime = 0;
+
+    alertSound.play()
+        .then(() => {
+            alertSound.pause();
+            alertSound.currentTime = 0;
+            alertSound.volume = 1; // מחזיר ווליום
+            console.log('🔓 Alert sound armed');
+        })
+        .catch(err => {
+            console.warn('Audio arming failed:', err);
+        });
+}
+
 // Start tracking
 async function startTracking() {
     if (!selectedStation) {
@@ -494,6 +513,10 @@ async function startTracking() {
         return;
     }
 
+        // 🔔 חימוש אודיו – חובה!
+    armAlertSound();
+
+    
     try {
         // Request notification permission
         requestNotificationPermission();
