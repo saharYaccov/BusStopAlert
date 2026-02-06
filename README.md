@@ -1,6 +1,6 @@
 # התראת קרבה לתחנת אוטובוס 🔔
 קישור ישיר לאפליקציה -
-(app)[https://saharyaccov.github.io/BusStopAlert/]
+[app](https://saharyaccov.github.io/BusStopAlert/)
 אפליקציה חכמה שעוקבת אחר מיקומך ומתריעה אוטומטית כשאתה מתקרב לתחנת האוטובוס שלך.
 
 ## תכונות ✨
